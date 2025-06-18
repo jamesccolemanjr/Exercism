@@ -71,6 +71,7 @@ packages/
 
 # Visual Studio Code
 .vscode/
+*.sln
 
 # Cursor (based on VS Code; reuse .vscode)
 .cursor/
