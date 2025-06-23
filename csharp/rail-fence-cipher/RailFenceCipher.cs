@@ -4,10 +4,14 @@ public class RailFenceCipher
 {
     private int _numRails;
     private string[] _rails;
-    private char[,] _decryptArray;
 
     public RailFenceCipher(int rails)
     {
+        if (rails < 2)
+        {
+            throw new ArgumentException("You must use at least 2 rails.");
+        }
+
         _numRails = rails;
         _rails = new string[rails];
     }
@@ -20,7 +24,7 @@ public class RailFenceCipher
         {
             
             _rails[row] += input[i];
-            UpdateRowNum(ref ascending, ref row);
+            MoveToNextRail(ref ascending, ref row);
         }
         return ConcatRails();
 
@@ -29,14 +33,14 @@ public class RailFenceCipher
     public string Decode(string input)
     {
         int length = input.Length;
-        _decryptArray = new char[_numRails, length];
+        char[,] _decryptArray = new char[_numRails, length];
 
         bool ascending = true;
         int row = 0;
         for (int i = 0; i < input.Length; i++)
         {
             _decryptArray[row, i] = 'X';
-            UpdateRowNum(ref ascending, ref row);
+            MoveToNextRail(ref ascending, ref row);
         }
 
         int inputCount = 0;
@@ -52,7 +56,7 @@ public class RailFenceCipher
             }
         }
 
-        return TraverseDecryptArray();
+        return TraverseDecryptArray(_decryptArray);
 
     }
 
@@ -66,7 +70,7 @@ public class RailFenceCipher
         return cipherText;
     }
 
-    private string TraverseDecryptArray()
+    private string TraverseDecryptArray(char[,] _decryptArray)
     {
         string clearText = "";
         for (int x = 0; x < _decryptArray.GetLength(1); x++)
@@ -80,7 +84,7 @@ public class RailFenceCipher
         return clearText;
     }
 
-    private void UpdateRowNum(ref bool ascending, ref int rowNum)
+    private void MoveToNextRail(ref bool ascending, ref int rowNum)
     {
         if (ascending)
         {
