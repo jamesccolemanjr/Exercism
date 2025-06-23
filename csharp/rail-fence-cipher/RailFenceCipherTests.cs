@@ -27,7 +27,7 @@ public class RailFenceCipherTests
         Assert.Equal(expected, sut.Encode(msg));
     }
 
-    [Fact(Skip = "Remove this Skip property to run this test")]
+    [Fact]
     public void Decode_with_three_rails()
     {
         var msg = "TEITELHDVLSNHDTISEIIEA";
@@ -36,7 +36,7 @@ public class RailFenceCipherTests
         Assert.Equal(expected, sut.Decode(msg));
     }
 
-    [Fact(Skip = "Remove this Skip property to run this test")]
+    [Fact]
     public void Decode_with_five_rails()
     {
         var msg = "EIEXMSMESAORIWSCE";
@@ -45,7 +45,7 @@ public class RailFenceCipherTests
         Assert.Equal(expected, sut.Decode(msg));
     }
 
-    [Fact(Skip = "Remove this Skip property to run this test")]
+    [Fact]
     public void Decode_with_six_rails()
     {
         var msg = "133714114238148966225439541018335470986172518171757571896261";
