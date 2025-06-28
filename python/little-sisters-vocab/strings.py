@@ -1,7 +1,6 @@
 """Functions for creating, transforming, and adding prefixes to strings."""
 
 
-import enum
 import string
 
 
@@ -12,7 +11,7 @@ def add_prefix_un(word):
     :return: str - of root word prepended with 'un'.
     """
 
-    return "un" + word
+    return 'un' + word
 
 
 def make_word_groups(vocab_words):
@@ -32,10 +31,10 @@ def make_word_groups(vocab_words):
 
     prefix = vocab_words[0]
 
-    for i in range(0, len(vocab_words)):
-        if i == 0:
+    for index, word in enumerate(vocab_words):
+        if index == 0:
             continue
-        vocab_words[i] = prefix + vocab_words[i]
+        vocab_words[index] = prefix + word
 
     return ' :: '.join(vocab_words[0:])
         
