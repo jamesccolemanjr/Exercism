@@ -26,19 +26,24 @@ public static class Appointment
     {
 
         DateTime convertedDate = DateTime.Parse(appointmentDateDescription, CultureInfo.InvariantCulture);
-        TimeZoneInfo timeZone = location switch
-        {
-            Location.NewYork when RuntimeInformation.OSDescription == "macOS" || RuntimeInformation.OSDescription == "Linux" => TimeZoneInfo.FindSystemTimeZoneById("America/New_York"),
-            Location.NewYork when RuntimeInformation.OSDescription == "Windows" => TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"),
-            Location.London when RuntimeInformation.OSDescription == "macOS" || RuntimeInformation.OSDescription == "Linux" => TimeZoneInfo.FindSystemTimeZoneById("Europe/London"),
-            Location.London when RuntimeInformation.OSDescription == "Windows" => TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time"),
-            Location.Paris when RuntimeInformation.OSDescription == "macOS" || RuntimeInformation.OSDescription == "Linux" => TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris"),
-            Location.Paris when RuntimeInformation.OSDescription == "Windows" => TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time"),
-            _ => throw new NotSupportedException("Unsupported location or operating system")
-
-        };
+        TimeZoneInfo timeZone = GetTimeZone(location);
 
         return TimeZoneInfo.ConvertTimeToUtc(convertedDate, timeZone);
+    }
+
+    private static TimeZoneInfo GetTimeZone(Location location)
+    {
+        return location switch
+        {
+            Location.NewYork when RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux) => TimeZoneInfo.FindSystemTimeZoneById("America/New_York"),
+            Location.NewYork when RuntimeInformation.IsOSPlatform(OSPlatform.Windows) => TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"),
+            Location.London when RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux) => TimeZoneInfo.FindSystemTimeZoneById("Europe/London"),
+            Location.London when RuntimeInformation.IsOSPlatform(OSPlatform.Windows) => TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time"),
+            Location.Paris when RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux) => TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris"),
+            Location.Paris when RuntimeInformation.IsOSPlatform(OSPlatform.Windows) => TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time"),
+            _ => throw new NotSupportedException("Unsupported location or operating system.")
+
+        };
     }
 
     public static DateTime GetAlertTime(DateTime appointment, AlertLevel alertLevel)
@@ -54,11 +59,26 @@ public static class Appointment
 
     public static bool HasDaylightSavingChanged(DateTime dt, Location location)
     {
-        throw new NotImplementedException("Please implement the (static) Appointment.HasDaylightSavingChanged() method");
+        TimeZoneInfo timeZone = GetTimeZone(location);
+        return timeZone.IsDaylightSavingTime(dt) != timeZone.IsDaylightSavingTime(dt.AddDays(-7));
     }
 
     public static DateTime NormalizeDateTime(string dtStr, Location location)
     {
-        throw new NotImplementedException("Please implement the (static) Appointment.NormalizeDateTime() method");
+        try
+        {
+            return DateTime.Parse(dtStr, location switch
+            {
+                Location.NewYork => new CultureInfo("en-US"),
+                Location.London => new CultureInfo("en-GB"),
+                Location.Paris => new CultureInfo("fr-FR"),
+                _ => throw new NotSupportedException("Unsupported location.")
+            });
+
+        }
+        catch
+        {
+            return new DateTime(1, 1, 1);
+        }
     }
 }
